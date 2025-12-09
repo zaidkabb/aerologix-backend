@@ -1,4 +1,4 @@
-package org.pm.aerologixbackend.controller1;
+package org.pm.aerologixbackend.controller;
 
 
 import jakarta.validation.Valid;
