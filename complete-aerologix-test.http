@@ -1,0 +1,620 @@
+### ========================================
+### AEROLOGIX - COMPLETE END-TO-END TEST
+### ========================================
+### Instructions:
+### 1. Run tests in order (top to bottom)
+### 2. After Section 1, copy tokens and replace placeholders
+### 3. Check ✅ for expected success, ❌ for expected failures
+### ========================================
+
+### ========================================
+### SECTION 1: AUTHENTICATION & SETUP
+### ========================================
+
+### 1.1 - Register Admin User
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "email": "admin@aerologix.com",
+  "password": "admin123",
+  "firstName": "Admin",
+  "lastName": "User",
+  "role": "ADMIN"
+}
+
+### 1.2 - Login as Admin ⭐ COPY THIS TOKEN!
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin123"
+}
+
+### 1.3 - Register Driver User
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "driver1",
+  "email": "driver1@aerologix.com",
+  "password": "driver123",
+  "firstName": "John",
+  "lastName": "Driver",
+  "role": "DRIVER"
+}
+
+### 1.4 - Login as Driver ⭐ COPY THIS TOKEN!
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "driver1",
+  "password": "driver123"
+}
+
+### 1.5 - Register Customer User
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "customer1",
+  "email": "customer1@aerologix.com",
+  "password": "customer123",
+  "firstName": "Jane",
+  "lastName": "Customer",
+  "role": "CUSTOMER"
+}
+
+### 1.6 - Login as Customer ⭐ COPY THIS TOKEN!
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "customer1",
+  "password": "customer123"
+}
+
+### 1.7 - ❌ Test Invalid Login (should fail with 401)
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "wrongpassword"
+}
+
+### 1.8 - ❌ Test Duplicate Username (should fail with 409)
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "email": "another@aerologix.com",
+  "password": "password123",
+  "firstName": "Another",
+  "lastName": "Admin",
+  "role": "ADMIN"
+}
+
+### ========================================
+### SECTION 2: WAREHOUSES (Admin Only)
+### ========================================
+
+### 2.1 - ✅ Create Hamburg Warehouse
+POST http://localhost:8080/api/warehouses
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "name": "Hamburg Distribution Center",
+  "address": "Hamburg Harburg 45",
+  "city": "Hamburg",
+  "country": "Germany",
+  "latitude": 34.5200,
+  "longitude": 13.4050,
+  "capacity": 13000
+}
+
+### 2.2 - ✅ Create Berlin Warehouse
+POST http://localhost:8080/api/warehouses
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "name": "Berlin Distribution Center",
+  "address": "Industriestraße 45",
+  "city": "Berlin",
+  "country": "Germany",
+  "latitude": 52.5200,
+  "longitude": 13.4050,
+  "capacity": 15000
+}
+
+### 2.3 - ✅ Get All Warehouses
+GET http://localhost:8080/api/warehouses
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 2.4 - ✅ Add Inventory to Hamburg
+POST http://localhost:8080/api/warehouses/1/inventory/add?volume=2500
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 2.5 - ✅ Check Hamburg Warehouse Status
+GET http://localhost:8080/api/warehouses/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 2.6 - ❌ Try to Exceed Capacity (should fail with 400)
+POST http://localhost:8080/api/warehouses/1/inventory/add?volume=20000
+Authorization: Bearer
+
+### 2.7 - ❌ Driver tries to access warehouses (should fail with 403)
+GET http://localhost:8080/api/warehouses
+Authorization: Bearer DRIVER_TOKEN_HERE
+
+### ========================================
+### SECTION 3: TRUCKS
+### ========================================
+
+### 3.1 - ✅ Admin Creates Truck 1
+POST http://localhost:8080/api/trucks
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "licensePlate": "HH-AB-1234",
+  "model": "Mercedes Actros",
+  "capacity": 18000
+}
+
+### 3.2 - ✅ Admin Creates Truck 2
+POST http://localhost:8080/api/trucks
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "licensePlate": "B-CD-5678",
+  "model": "MAN TGX",
+  "capacity": 24000
+}
+
+### 3.3 - ✅ Admin Creates Truck 3
+POST http://localhost:8080/api/trucks
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "licensePlate": "M-EF-9012",
+  "model": "Volvo FH",
+  "capacity": 20000
+}
+
+### 3.4 - ✅ Get All Trucks (Admin)
+GET http://localhost:8080/api/trucks
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+
+### 3.5 - ✅ Driver Views Trucks (should work)
+GET http://localhost:8080/api/trucks
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcml2ZXIxIiwiaWF0IjoxNzYzNzY4OTQ0LCJleHAiOjE3NjM4NTUzNDR9.xzBYQKg3lpBTYJbCuGxA_U_TLkkOUD2Q71QkCT3VqXE
+
+### 3.6 - ✅ Admin Updates Truck GPS
+PATCH http://localhost:8080/api/trucks/1/location?latitude=53.5511&longitude=9.9937
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 3.7 - ✅ Driver Updates Truck GPS (should work)
+PATCH http://localhost:8080/api/trucks/2/location?latitude=52.5200&longitude=13.4050
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcml2ZXIxIiwiaWF0IjoxNzYzNzY4OTQ0LCJleHAiOjE3NjM4NTUzNDR9.xzBYQKg3lpBTYJbCuGxA_U_TLkkOUD2Q71QkCT3VqXE
+
+### 3.8 - ❌ Driver tries to create truck (should fail with 403)
+POST http://localhost:8080/api/trucks
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcml2ZXIxIiwiaWF0IjoxNzYzNzY4OTQ0LCJleHAiOjE3NjM4NTUzNDR9.xzBYQKg3lpBTYJbCuGxA_U_TLkkOUD2Q71QkCT3VqXE
+Content-Type: application/json
+
+{
+  "licensePlate": "HH-XX-9999",
+  "model": "Scania R450",
+  "capacity": 19000
+}
+
+### 3.9 - ❌ Duplicate License Plate (should fail with 409)
+POST http://localhost:8080/api/trucks
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "licensePlate": "HH-AB-1234",
+  "model": "Scania R450",
+  "capacity": 19000
+}
+
+### 3.10 - ❌ Customer tries to view trucks (should fail with 403)
+GET http://localhost:8080/api/trucks
+Authorization: Bearer CUSTOMER_TOKEN_HERE
+
+### ========================================
+### SECTION 4: DRIVERS
+### ========================================
+
+### 4.1 - ✅ Admin Creates Driver 1
+POST http://localhost:8080/api/drivers
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "firstName": "Max",
+  "lastName": "Mueller",
+  "email": "max.mueller@aerologix.com",
+  "licenseNumber": "DE12345678",
+  "phoneNumber": "+4915012345678"
+}
+
+### 4.2 - ✅ Admin Creates Driver 2
+POST http://localhost:8080/api/drivers
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "firstName": "Anna",
+  "lastName": "Schmidt",
+  "email": "anna.schmidt@aerologix.com",
+  "licenseNumber": "DE87654321",
+  "phoneNumber": "+4915087654321"
+}
+
+### 4.3 - ✅ Admin Creates Driver 3
+POST http://localhost:8080/api/drivers
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "firstName": "Hans",
+  "lastName": "Weber",
+  "email": "hans.weber@aerologix.com",
+  "licenseNumber": "DE11223344",
+  "phoneNumber": "+4915011223344"
+}
+
+### 4.4 - ✅ Get All Drivers
+GET http://localhost:8080/api/drivers
+Authorization: Bearer
+
+### 4.5 - ✅ Assign Truck 1 to Driver 1
+POST http://localhost:8080/api/drivers/1/assign-truck/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 4.6 - ✅ Assign Truck 2 to Driver 2
+POST http://localhost:8080/api/drivers/2/assign-truck/2
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 4.7 - ✅ Check Driver 1 Status (should be ON_DUTY)
+GET http://localhost:8080/api/drivers/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 4.8 - ❌ Try to Assign Same Truck to Another Driver (should fail)
+POST http://localhost:8080/api/drivers/3/assign-truck/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 4.9 - ❌ Duplicate Email (should fail with 409)
+POST http://localhost:8080/api/drivers
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "firstName": "Peter",
+  "lastName": "Meyer",
+  "email": "max.mueller@aerologix.com",
+  "licenseNumber": "DE99999999",
+  "phoneNumber": "+4915011111111"
+}
+
+### 4.10 - ❌ Driver role tries to access drivers (should fail with 403)
+GET http://localhost:8080/api/drivers
+Authorization: Bearer DRIVER_TOKEN_HERE
+
+### ========================================
+### SECTION 5: SHIPMENTS
+### ========================================
+
+### 5.1 - ✅ Admin Creates Shipment 1
+POST http://localhost:8080/api/shipments
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "origin": "Hamburg",
+  "destination": "Berlin",
+  "weight": 500.0
+}
+
+### 5.2 - ✅ Admin Creates Shipment 2
+POST http://localhost:8080/api/shipments
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "origin": "Munich",
+  "destination": "Frankfurt",
+  "weight": 300.0
+}
+
+### 5.3 - ✅ Admin Creates Shipment 3
+POST http://localhost:8080/api/shipments
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "origin": "Berlin",
+  "destination": "Hamburg",
+  "weight": 750.0
+}
+
+### 5.4 - ✅ Get All Shipments (Admin)
+GET http://localhost:8080/api/shipments
+Authorization: Bearer
+
+### 5.5 - ✅ Driver Views All Shipments (should work)
+GET http://localhost:8080/api/shipments
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+### 5.6 - ✅ Customer Views Specific Shipment (should work)
+GET http://localhost:8080/api/shipments/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJjdXN0b21lcjEiLCJpYXQiOjE3NjM3Njg5OTYsImV4cCI6MTc2Mzg1NTM5Nn0.ILdmvDH3JuSgegsT8rAQXICygn2tz5y0GK1jQ0A21Ng
+
+
+### 5.7 - ❌ Customer tries to view all shipments (should fail with 403)
+GET http://localhost:8080/api/shipments
+Authorization: Bearer CUSTOMER_TOKEN_HERE
+
+### 5.8 - ❌ Driver tries to create shipment (should fail with 403)
+POST http://localhost:8080/api/shipments
+Authorization: Bearer DRIVER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "origin": "Cologne",
+  "destination": "Stuttgart",
+  "weight": 400.0
+}
+
+### 5.9 - ❌ Same Origin and Destination (should fail with 400)
+POST http://localhost:8080/api/shipments
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "origin": "Hamburg",
+  "destination": "Hamburg",
+  "weight": 100.0
+}
+
+### 5.10 - ❌ Negative Weight (should fail with 400)
+POST http://localhost:8080/api/shipments
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "origin": "Hamburg",
+  "destination": "Berlin",
+  "weight": -50.0
+}
+
+### ========================================
+### SECTION 6: INTEGRATION - ASSIGN SHIPMENTS
+### ========================================
+
+### 6.1 - ✅ Admin Assigns Shipment 1 to Driver 1 + Truck 1
+POST http://localhost:8080/api/shipments/1/assign
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "driverId": 1,
+  "truckId": 1
+}
+
+### 6.2 - ✅ Check Shipment 1 (should be IN_TRANSIT with driver/truck assigned)
+GET http://localhost:8080/api/shipments/1
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+
+### 6.3 - ✅ Admin Assigns Shipment 2 to Driver 2 + Truck 2
+POST http://localhost:8080/api/shipments/2/assign
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "driverId": 2,
+  "truckId": 2
+}
+
+### 6.4 - ❌ Try to Assign to Driver Without Truck (should fail with 400)
+POST http://localhost:8080/api/shipments/3/assign
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+Content-Type: application/json
+
+{
+  "driverId": 3,
+  "truckId": 3
+}
+
+### 6.5 - ❌ Try to Assign with Mismatched Driver-Truck (should fail with 400)
+POST http://localhost:8080/api/shipments/3/assign
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "driverId": 1,
+  "truckId": 2
+}
+
+### 6.6 - ❌ Driver tries to assign shipment (should fail with 403)
+POST http://localhost:8080/api/shipments/3/assign
+Authorization: Bearer DRIVER_TOKEN_HERE
+Content-Type: application/json
+
+{
+  "driverId": 2,
+  "truckId": 2
+}
+
+### ========================================
+### SECTION 7: DELIVERY OPERATIONS
+### ========================================
+
+### 7.1 - ✅ Admin Marks Shipment 1 as Delivered
+POST http://localhost:8080/api/shipments/1/deliver
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2Mzc2ODg4NCwiZXhwIjoxNzYzODU1Mjg0fQ.-k5FDP5YmSIvIhnIbBL5Uhh1MoPRSTk90Mx3uqN6Pt8
+
+
+### 7.2 - ✅ Driver Marks Shipment 2 as Delivered (should work)
+POST http://localhost:8080/api/shipments/2/deliver
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkcml2ZXIxIiwiaWF0IjoxNzYzNzY4OTQ0LCJleHAiOjE3NjM4NTUzNDR9.xzBYQKg3lpBTYJbCuGxA_U_TLkkOUD2Q71QkCT3VqXE
+
+### 7.3 - ✅ Check Delivered Shipment
+GET http://localhost:8080/api/shipments/1
+Authorization: Bearer
+
+### 7.4 - ❌ Try to Deliver Already Delivered Shipment (should fail with 400)
+POST http://localhost:8080/api/shipments/1/deliver
+Authorization: Bearer
+
+### 7.5 - ❌ Try to Unassign Delivered Shipment (should fail with 400)
+DELETE http://localhost:8080/api/shipments/1/unassign
+Authorization: Bearer
+
+### 7.6 - ❌ Customer tries to mark as delivered (should fail with 403)
+POST http://localhost:8080/api/shipments/2/deliver
+Authorization: Bearer CUSTOMER_TOKEN_HERE
+
+### ========================================
+### SECTION 8: UPDATE OPERATIONS
+### ========================================
+
+### 8.1 - ✅ Update Shipment Details
+PUT http://localhost:8080/api/shipments/3
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "origin": "Berlin",
+  "destination": "Cologne",
+  "weight": 800.0
+}
+
+### 8.2 - ✅ Update Driver Details
+PUT http://localhost:8080/api/drivers/3
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "firstName": "Hans",
+  "lastName": "Weber",
+  "email": "hans.weber@aerologix.com",
+  "licenseNumber": "DE11223344",
+  "phoneNumber": "+4915099999999"
+}
+
+### 8.3 - ✅ Update Truck Details
+PUT http://localhost:8080/api/trucks/3
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "licensePlate": "M-EF-9012",
+  "model": "Volvo FH 2024",
+  "capacity": 22000
+}
+
+### 8.4 - ❌ Try to Update Delivered Shipment (should fail with 400)
+PUT http://localhost:8080/api/shipments/1
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "origin": "Hamburg",
+  "destination": "Stuttgart",
+  "weight": 600.0
+}
+
+### 8.5 - ❌ Try to Update ON_DUTY Driver (should fail with 400)
+PUT http://localhost:8080/api/drivers/1
+Authorization: Bearer
+Content-Type: application/json
+
+{
+  "firstName": "Maximilian",
+  "lastName": "Mueller",
+  "email": "max.mueller@aerologix.com",
+  "licenseNumber": "DE12345678",
+  "phoneNumber": "+4915012345678"
+}
+
+### ========================================
+### SECTION 9: DELETE OPERATIONS
+### ========================================
+
+### 9.1 - ❌ Try to Delete IN_USE Truck (should fail with 400)
+DELETE http://localhost:8080/api/trucks/1
+Authorization: Bearer
+
+### 9.2 - ❌ Try to Delete ON_DUTY Driver (should fail with 400)
+DELETE http://localhost:8080/api/drivers/1
+Authorization: Bearer
+
+### 9.3 - ❌ Try to Delete DELIVERED Shipment (should fail with 400)
+DELETE http://localhost:8080/api/shipments/1
+Authorization: Bearer
+
+### 9.4 - ✅ Unassign Driver 1 from Truck
+DELETE http://localhost:8080/api/drivers/1/unassign-truck
+Authorization: Bearer
+
+### 9.5 - ✅ Now Delete Driver 1 (should work)
+DELETE http://localhost:8080/api/drivers/1
+Authorization: Bearer
+
+### 9.6 - ✅ Delete Available Truck (should work)
+DELETE http://localhost:8080/api/trucks/1
+Authorization: Bearer
+
+### 9.7 - ✅ Delete CREATED Shipment (should work)
+DELETE http://localhost:8080/api/shipments/3
+Authorization: Bearer
+
+### ========================================
+### SECTION 10: UNAUTHORIZED ACCESS
+### ========================================
+
+### 10.1 - ❌ No Token (should fail with 401)
+GET http://localhost:8080/api/shipments
+
+### 10.2 - ❌ Invalid Token (should fail with 401)
+GET http://localhost:8080/api/shipments
+Authorization: Bearer invalid-token-xyz-123
+
+### ========================================
+### SECTION 11: FINAL SUMMARY
+### ========================================
+
+### 11.1 - ✅ Get All Shipments Summary
+GET http://localhost:8080/api/shipments
+Authorization:
+
+### 11.2 - ✅ Get All Drivers Summary
+GET http://localhost:8080/api/drivers
+Authorization: Bearer
+
+### 11.3 - ✅ Get All Trucks Summary
+GET http://localhost:8080/api/trucks
+Authorization: Bearer
+### 11.4 - ✅ Get All Warehouses Summary
+GET http://localhost:8080/api/warehouses
+Authorization: Bearer
+### ========================================
+### TEST COMPLETE!
+### Expected Results:
+### - ✅ marks should return 200/201/204
+### - ❌ marks should return 400/401/403/409
+### ========================================

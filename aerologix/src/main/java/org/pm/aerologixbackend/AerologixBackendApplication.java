@@ -9,5 +9,4 @@ public class AerologixBackendApplication {
     public static void main(String[] args) {
         SpringApplication.run(AerologixBackendApplication.class, args);
     }
-
 }
